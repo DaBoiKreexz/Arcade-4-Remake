@@ -3,15 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Arcade-4 Remake</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      color: #ffcc00;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #gameFrame {
+      display: none;
+      width: 800px;
+      height: 600px;
+      border: 2px solid #fff;
+      margin: 20px auto;
+    }
+  </style>
 </head>
 <body>
   <h1>🎮 Arcade-4 Remake</h1>
   <p>Select a game to play:</p>
-  <ul>
-    <li><a href="https://github.com/DaBoiKreexz/Arcade-4-Remake/tree/main/games/snake.html">Snake</a></li>
-    <li><a href="https://github.com/DaBoiKreexz/Arcade-4-Remake/tree/main/games/pong.html">Pong</a></li>
-    <li><a href="https://github.com/DaBoiKreexz/Arcade-4-Remake/tree/main/games/breakout.html">Breakout</a></li>
-  </ul>
+  <button onclick="loadGame('games/FNAF1/index.html')">Play FNAF1</button>
+
+  <!-- iframe where the game loads -->
+  <iframe id="gameFrame"></iframe>
+
+  <script>
+    function loadGame(path) {
+      const frame = document.getElementById("gameFrame");
+      frame.src = path;
+      frame.style.display = "block";
+    }
+  </script>
 </body>
 </html>
