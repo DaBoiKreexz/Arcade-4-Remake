@@ -101,11 +101,19 @@
             Module: {
               onRuntimeInitialized: function () {
                 UnityProgress(gameInstance, "complete");
+                // Force resolution
+                const canvas = document.querySelector("#gameContainer canvas");
+                if(canvas){
+                  canvas.width = 640;
+                  canvas.height = 480;
+                  canvas.style.width = "640px";
+                  canvas.style.height = "480px";
+                }
                 // Start muted
                 if(gameInstance.Module.audioContext){
-                  gameInstance.Module.audioContext.suspend();
-                  isMuted = true;
-                  document.getElementById("muteBtn").innerText = "Unmute";
+                  //gameInstance.Module.audioContext.suspend();
+                  isMuted = false;
+                  document.getElementById("muteBtn").innerText = "Mute";
                 }
               }
             }
@@ -122,7 +130,18 @@
       if(id==='snowrider' && gameInstance){
         try { gameInstance.Quit(); } catch(e){}
         gameInstance = null;
-        document.getElementById("gameContainer").innerHTML = "";
+        // Remove the old container completely
+        const container = document.getElementById("gameContainer");
+        if(container){
+          container.remove();
+        }
+        // Recreate a fresh container for next launch
+        const newDiv = document.createElement("div");
+        newDiv.id = "gameContainer";
+        newDiv.style.width = "640px";
+        newDiv.style.height = "480px";
+        newDiv.style.margin = "auto";
+        document.getElementById("snowrider").appendChild(newDiv);
       }
       document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
       document.getElementById('games').classList.add('active');
