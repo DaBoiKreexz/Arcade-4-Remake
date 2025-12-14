@@ -19,7 +19,7 @@
     .game-card button { padding:10px 20px; background:#ffcc00; border:none; border-radius:5px; cursor:pointer; font-weight:bold; }
     .game-card button:hover { background:#fff; color:#000; }
     .settings-control { margin:10px; }
-    .gameview { width:100%; height:90vh; background:#000; }
+    .gameview { background:#000; }
     .back-btn { margin:10px; padding:8px 16px; background:#ffcc00; border:none; border-radius:5px; cursor:pointer; }
     #gameFrame { width:640px; height:480px; border:2px solid #fff; margin:20px auto; display:block; }
     #gameContainer { width:640px; height:480px; margin:auto; }
@@ -27,10 +27,10 @@
 </head>
 <body>
   <!-- Navigation -->
-  <nav id="mainNav">
-    <button onclick="showSection('home')">Home</button>
-    <button onclick="showSection('games')">Games</button>
-    <button onclick="showSection('settings')">Settings</button>
+  <nav>
+    <button onclick="navigate('home')">Home</button>
+    <button onclick="navigate('games')">Games</button>
+    <button onclick="navigate('settings')">Settings</button>
   </nav>
 
   <!-- Home -->
@@ -77,8 +77,8 @@
   <script>
     let gameInstance = null;
 
-    function showSection(id){
-      // stop any running games when leaving
+    function navigate(id){
+      // stop games whenever you leave
       stopGame('fnaf');
       stopGame('snowrider');
       document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
@@ -86,9 +86,10 @@
     }
 
     function playGame(id){
-      showSection(id);
+      navigate(id);
       if(id==='fnaf'){
-        document.getElementById("gameFrame").src="games/FNAF1/index.html";
+        const frame = document.getElementById("gameFrame");
+        frame.src = "games/FNAF1/index.html";
       }
       if(id==='snowrider'){
         gameInstance = UnityLoader.instantiate("gameContainer",
@@ -99,13 +100,17 @@
 
     function stopGame(id){
       if(id==='fnaf'){
-        document.getElementById("gameFrame").src="";
+        const frame = document.getElementById("gameFrame");
+        frame.src = "about:blank";   // fully clears iframe
       }
       if(id==='snowrider' && gameInstance){
         try { gameInstance.Quit(); } catch(e){}
         gameInstance = null;
-        document.getElementById("gameContainer").innerHTML="";
+        document.getElementById("gameContainer").innerHTML = ""; // clear Unity canvas
       }
+      // return to Games section when stopping
+      document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
+      document.getElementById('games').classList.add('active');
     }
   </script>
 </body>
