@@ -21,6 +21,8 @@
     .settings-control { margin:10px; }
     .gameview { width:100%; height:90vh; background:#000; }
     .back-btn { margin:10px; padding:8px 16px; background:#ffcc00; border:none; border-radius:5px; cursor:pointer; }
+    #gameFrame { width:640px; height:480px; border:2px solid #fff; margin:20px auto; display:block; }
+    #gameContainer { width:640px; height:480px; margin:auto; }
   </style>
 </head>
 <body>
@@ -60,27 +62,49 @@
 
   <!-- Game Views -->
   <section id="fnaf" class="gameview">
-    <button class="back-btn" onclick="showSection('games')">⬅ Back to Arcade</button>
-    <h2 style="color:white;">FNAF1 Game Area</h2>
-    <!-- Paste FNAF1 code here -->
+    <button class="back-btn" onclick="stopGame('fnaf')">⬅ Back to Arcade</button>
+    <iframe id="gameFrame" src="" frameborder="0"></iframe>
   </section>
 
   <section id="snowrider" class="gameview">
-    <button class="back-btn" onclick="showSection('games')">⬅ Back to Arcade</button>
-    <div id="gameContainer" style="width:800px;height:600px;margin:auto;"></div>
+    <button class="back-btn" onclick="stopGame('snowrider')">⬅ Back to Arcade</button>
+    <div id="gameContainer"></div>
   </section>
 
+  <!-- Unity Loader -->
   <script src="https://cdn.jsdelivr.net/gh/era6yera6y/00@main/TemplateData/UnityProgress.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/UnityLoader.js"></script>
   <script>
+    let gameInstance = null;
+
     function showSection(id){
+      // stop any running games when leaving
+      stopGame('fnaf');
+      stopGame('snowrider');
       document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
+
     function playGame(id){
       showSection(id);
+      if(id==='fnaf'){
+        document.getElementById("gameFrame").src="games/FNAF1/index.html";
+      }
       if(id==='snowrider'){
-        UnityLoader.instantiate("gameContainer","https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/SnowRider3D-gd-1.json",{onProgress:UnityProgress});
+        gameInstance = UnityLoader.instantiate("gameContainer",
+          "https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/SnowRider3D-gd-1.json",
+          {onProgress:UnityProgress});
+      }
+    }
+
+    function stopGame(id){
+      if(id==='fnaf'){
+        document.getElementById("gameFrame").src="";
+      }
+      if(id==='snowrider' && gameInstance){
+        try { gameInstance.Quit(); } catch(e){}
+        gameInstance = null;
+        document.getElementById("gameContainer").innerHTML="";
       }
     }
   </script>
