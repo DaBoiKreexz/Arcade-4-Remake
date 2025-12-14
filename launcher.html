@@ -23,6 +23,7 @@
     .back-btn { margin:10px; padding:8px 16px; background:#ffcc00; border:none; border-radius:5px; cursor:pointer; }
     #gameFrame { width:640px; height:480px; border:2px solid #fff; margin:20px auto; display:block; }
     #gameContainer { width:640px; height:480px; margin:auto; }
+    #muteBtn { margin:10px; padding:8px 16px; background:#ffcc00; border:none; border-radius:5px; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -68,6 +69,7 @@
 
   <section id="snowrider" class="gameview">
     <button class="back-btn" onclick="stopGame('snowrider')">⬅ Back to Arcade</button>
+    <button id="muteBtn" onclick="toggleSound()">Unmute</button>
     <div id="gameContainer"></div>
   </section>
 
@@ -76,9 +78,9 @@
   <script src="https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/UnityLoader.js"></script>
   <script>
     let gameInstance = null;
+    let isMuted = true;
 
     function navigate(id){
-      // stop games whenever you leave
       stopGame('fnaf');
       stopGame('snowrider');
       document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
@@ -94,23 +96,50 @@
       if(id==='snowrider'){
         gameInstance = UnityLoader.instantiate("gameContainer",
           "https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/SnowRider3D-gd-1.json",
-          {onProgress:UnityProgress});
+          {
+            onProgress: UnityProgress,
+            Module: {
+              onRuntimeInitialized: function () {
+                UnityProgress(gameInstance, "complete");
+                // Start muted
+                if(gameInstance.Module.audioContext){
+                  gameInstance.Module.audioContext.suspend();
+                  isMuted = true;
+                  document.getElementById("muteBtn").innerText = "Unmute";
+                }
+              }
+            }
+          }
+        );
       }
     }
 
     function stopGame(id){
       if(id==='fnaf'){
         const frame = document.getElementById("gameFrame");
-        frame.src = "about:blank";   // fully clears iframe
+        frame.src = "about:blank";
       }
       if(id==='snowrider' && gameInstance){
         try { gameInstance.Quit(); } catch(e){}
         gameInstance = null;
-        document.getElementById("gameContainer").innerHTML = ""; // clear Unity canvas
+        document.getElementById("gameContainer").innerHTML = "";
       }
-      // return to Games section when stopping
       document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
       document.getElementById('games').classList.add('active');
+    }
+
+    function toggleSound(){
+      if(gameInstance && gameInstance.Module && gameInstance.Module.audioContext){
+        if(isMuted){
+          gameInstance.Module.audioContext.resume();
+          isMuted = false;
+          document.getElementById("muteBtn").innerText = "Mute";
+        } else {
+          gameInstance.Module.audioContext.suspend();
+          isMuted = true;
+          document.getElementById("muteBtn").innerText = "Unmute";
+        }
+      }
     }
   </script>
 </body>
