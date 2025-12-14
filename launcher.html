@@ -1,157 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Arcade-4 Remake</title>
-  <style>
-    body { margin:0; font-family:Arial,sans-serif; background:#111; color:#eee; }
-    nav { background:#222; display:flex; justify-content:center; padding:10px; }
-    nav button { background:none; border:none; color:#eee; font-size:18px; margin:0 20px; cursor:pointer; }
-    nav button:hover { color:#ffcc00; }
-    section { display:none; padding:20px; text-align:center; }
-    section.active { display:block; }
-    .rainbow { font-size:48px; font-weight:bold;
-      background:linear-gradient(to right,red,orange,yellow,green,blue,indigo,violet);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      animation:rainbowMove 5s linear infinite; }
-    @keyframes rainbowMove { from{background-position:0;} to{background-position:200%;} }
-    .game-card { margin:20px auto; }
-    .game-card button { padding:10px 20px; background:#ffcc00; border:none; border-radius:5px; cursor:pointer; font-weight:bold; }
-    .game-card button:hover { background:#fff; color:#000; }
-    .settings-control { margin:10px; }
-    .gameview { background:#000; }
-    .back-btn, #muteBtn { margin:10px; padding:8px 16px; background:#ffcc00; border:none; border-radius:5px; cursor:pointer; }
-    #gameFrame { width:640px; height:480px; border:2px solid #fff; margin:20px auto; display:block; }
-    .gameWrapper { display:flex; justify-content:center; align-items:center; }
-    #gameContainer { width:640px; height:480px; }
-  </style>
+<meta charset="UTF-8">
+<title>Arcade-4 Remake</title>
+
+<link id="favicon" rel="icon" href="favicon.ico">
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:'Orbitron',sans-serif;
+  background:radial-gradient(circle at top,#0f0c29,#302b63,#24243e);
+  color:#eee;
+}
+nav{
+  background:#111;
+  display:flex;
+  justify-content:center;
+  padding:10px;
+}
+nav button{
+  background:none;
+  border:none;
+  color:#ffcc00;
+  font-family:'Press Start 2P';
+  margin:0 20px;
+  cursor:pointer;
+}
+section{
+  display:none;
+  padding:20px;
+  text-align:center;
+}
+section.active{display:block;}
+.rainbow{
+  font-size:40px;
+  font-family:'Press Start 2P';
+}
+.game-card{
+  background:#1a1a2e;
+  border:2px solid #ffcc00;
+  border-radius:12px;
+  padding:20px;
+  margin:20px auto;
+  width:300px;
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+}
+.back-btn,#muteBtn{
+  padding:8px 16px;
+  background:#ffcc00;
+  border:none;
+  border-radius:5px;
+  font-family:'Press Start 2P';
+  cursor:pointer;
+}
+#gameFrame{
+  width:640px;
+  height:480px;
+  border:2px solid #fff;
+}
+#gameContainer{
+  width:640px;
+  height:480px;
+  margin:auto;
+}
+.settings-control{
+  background:#1a1a2e;
+  padding:15px;
+  border-radius:10px;
+  width:300px;
+  margin:auto;
+  color:#ffcc00;
+}
+</style>
 </head>
+
 <body>
-  <!-- Navigation -->
-  <nav>
-    <button onclick="navigate('home')">Home</button>
-    <button onclick="navigate('games')">Games</button>
-    <button onclick="navigate('settings')">Settings</button>
-  </nav>
 
-  <!-- Home -->
-  <section id="home" class="active">
-    <h1 class="rainbow">Arcade 4 Remake</h1>
-    <p>Welcome to your arcade hub!</p>
-  </section>
+<nav>
+  <button onclick="showSection('home')">Home</button>
+  <button onclick="showSection('games')">Games</button>
+  <button onclick="showSection('settings')">Settings</button>
+</nav>
 
-  <!-- Games -->
-  <section id="games">
-    <div class="game-card">
-      <button onclick="playGame('fnaf')">Play FNAF 1</button>
-    </div>
-    <div class="game-card">
-      <button onclick="playGame('snowrider')">Play Snow Rider 3D</button>
-    </div>
-  </section>
+<section id="home" class="active">
+  <h1 class="rainbow">Arcade-4 Remake</h1>
+  <p>Welcome to your arcade hub</p>
+</section>
 
-  <!-- Settings -->
-  <section id="settings">
-    <h2>Settings</h2>
-    <div class="settings-control">
-      <label>Background Color: <input type="color" onchange="document.body.style.background=this.value" value="#111"></label>
-    </div>
-    <div class="settings-control">
-      <label>Text Color: <input type="color" onchange="document.body.style.color=this.value" value="#eeeeee"></label>
-    </div>
-  </section>
+<section id="games">
+  <div id="gamesList"></div>
+</section>
 
-  <!-- Game Views -->
-  <section id="fnaf" class="gameview">
-    <button class="back-btn" onclick="stopGame('fnaf')">⬅ Back to Arcade</button>
-    <iframe id="gameFrame" src="" frameborder="0"></iframe>
-  </section>
+<section id="settings">
+  <h2>Settings</h2>
+  <div class="settings-control">
+    <label>Background:
+      <input type="color" onchange="document.body.style.background=this.value">
+    </label>
+  </div><br>
+  <div class="settings-control">
+    <label>Text:
+      <input type="color" onchange="document.body.style.color=this.value">
+    </label>
+  </div><br>
+  <div class="settings-control">
+    <label>Cloak As:
+      <select onchange="cloakSite(this.value)">
+        <option value="default">Arcade-4</option>
+        <option value="classroom">Google Classroom</option>
+        <option value="classlink">ClassLink</option>
+      </select>
+    </label>
+  </div>
+</section>
 
-  <section id="snowrider" class="gameview">
-    <button class="back-btn" onclick="stopGame('snowrider')">⬅ Back to Arcade</button>
+<section id="fnaf">
+  <div class="controls">
+    <button class="back-btn" onclick="stopGame('fnaf')">⬅ Back</button>
+    <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+  </div>
+  <iframe id="gameFrame"></iframe>
+</section>
+
+<section id="snowrider">
+  <div class="controls">
+    <button class="back-btn" onclick="stopGame('snowrider')">⬅ Back</button>
+    <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
     <button id="muteBtn" onclick="toggleSound()">Mute</button>
-    <div class="gameWrapper">
-      <div id="gameContainer"></div>
-    </div>
-  </section>
+  </div>
+  <div id="gameContainer"></div>
+</section>
 
-  <!-- Unity Loader -->
-  <script src="https://cdn.jsdelivr.net/gh/era6yera6y/00@main/TemplateData/UnityProgress.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/UnityLoader.js"></script>
-  <script>
-    let gameInstance = null;
-    let isMuted = false;
+<script src="https://cdn.jsdelivr.net/gh/era6yera6y/00@main/TemplateData/UnityProgress.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/UnityLoader.js"></script>
 
-    function navigate(id){
-      stopGame('fnaf');
-      stopGame('snowrider');
-      document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
+<script>
+let gameInstance=null;
+let isMuted=false;
 
-    function playGame(id){
-      navigate(id);
-      if(id==='fnaf'){
-        document.getElementById("gameFrame").src = "games/FNAF1/index.html";
-      }
-      if(id==='snowrider'){
-        gameInstance = UnityLoader.instantiate("gameContainer",
-          "https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/SnowRider3D-gd-1.json",
-          {
-            onProgress: UnityProgress,
-            Module: {
-              onRuntimeInitialized: function () {
-                UnityProgress(gameInstance, "complete");
-                const canvas = document.querySelector("#gameContainer canvas");
-                if(canvas){
-                  canvas.width = 640;
-                  canvas.height = 480;
-                  canvas.style.width = "640px";
-                  canvas.style.height = "480px";
-                }
-                isMuted = false;
-                document.getElementById("muteBtn").innerText = "Mute";
-              }
-            }
-          }
-        );
-      }
-    }
+function showSection(id){
+  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
 
-    function stopGame(id){
-      if(id==='fnaf'){
-        document.getElementById("gameFrame").src = "about:blank";
-      }
-      if(id==='snowrider' && gameInstance){
-        try { gameInstance.Quit(); } catch(e){}
-        gameInstance = null;
-        // Remove and rebuild container to fully kill WebGL context
-        const wrapper = document.querySelector("#snowrider .gameWrapper");
-        const oldContainer = document.getElementById("gameContainer");
-        if(oldContainer){ oldContainer.remove(); }
-        const newDiv = document.createElement("div");
-        newDiv.id = "gameContainer";
-        newDiv.style.width = "640px";
-        newDiv.style.height = "480px";
-        wrapper.appendChild(newDiv);
-      }
-      document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
-      document.getElementById('games').classList.add('active');
-    }
+const games=[
+  {id:"fnaf",name:"FNAF 1",type:"iframe",src:"games/FNAF1/index.html"},
+  {id:"snowrider",name:"Snow Rider 3D",type:"unity"}
+];
 
-    function toggleSound(){
-      if(gameInstance && gameInstance.Module && gameInstance.Module.audioContext){
-        if(isMuted){
-          gameInstance.Module.audioContext.resume();
-          isMuted = false;
-          document.getElementById("muteBtn").innerText = "Mute";
-        } else {
-          gameInstance.Module.audioContext.suspend();
-          isMuted = true;
-          document.getElementById("muteBtn").innerText = "Unmute";
-        }
-      }
-    }
-  </script>
+const list=document.getElementById("gamesList");
+games.forEach(g=>{
+  const card=document.createElement("div");
+  card.className="game-card";
+  card.innerHTML=`<h3>${g.name}</h3><button onclick="playGame('${g.id}')">Play</button>`;
+  list.appendChild(card);
+});
+
+function playGame(id){
+  showSection(id);
+  if(id==="fnaf"){
+    gameFrame.src="games/FNAF1/index.html";
+  }
+  if(id==="snowrider"){
+    gameInstance=UnityLoader.instantiate(
+      "gameContainer",
+      "https://cdn.jsdelivr.net/gh/era6yera6y/00@main/Build/SnowRider3D-gd-1.json",
+      {onProgress:UnityProgress}
+    );
+  }
+}
+
+function stopGame(id){
+  if(id==="fnaf") gameFrame.src="";
+  if(id==="snowrider" && gameInstance){
+    try{gameInstance.Quit();}catch(e){}
+    gameInstance=null;
+    gameContainer.innerHTML="";
+  }
+  showSection("games");
+}
+
+function toggleSound(){
+  if(!gameInstance?.Module?.audioContext) return;
+  if(isMuted){
+    gameInstance.Module.audioContext.resume();
+    muteBtn.innerText="Mute";
+  }else{
+    gameInstance.Module.audioContext.suspend();
+    muteBtn.innerText="Unmute";
+  }
+  isMuted=!isMuted;
+}
+
+function toggleFullscreen(){
+  if(!document.fullscreenElement)
+    document.documentElement.requestFullscreen();
+  else
+    document.exitFullscreen();
+}
+
+function cloakSite(opt){
+  const fav=document.getElementById("favicon");
+  if(opt==="classroom"){
+    document.title="Google Classroom";
+    fav.href="https://ssl.gstatic.com/classroom/favicon.png";
+  }else if(opt==="classlink"){
+    document.title="ClassLink";
+    fav.href="https://www.classlink.com/favicon.ico";
+  }else{
+    document.title="Arcade-4 Remake";
+    fav.href="favicon.ico";
+  }
+}
+</script>
+
 </body>
 </html>
